@@ -1,0 +1,4 @@
+functions:
+  - name: function-watermark-image
+    runtime: nodejs14
+    handler: watermark-image.handler

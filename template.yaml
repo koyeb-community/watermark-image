@@ -1,0 +1,58 @@
+parameters:
+    - name: STORE
+      description: "The store to watch to trigger the function and save the generated watermark image."
+      type: STORE_REF
+      required: true
+    - name: WATERMARK_IMAGE_URL
+      description: "The url of the image to use as a watermark"
+      type: "STRING"
+      required: true
+    - name: WATERMARK_IMAGE_LOGO_WIDTH
+      description: "The size in percentage of the watermark image compare to the source image."
+      type: "NUMBER"
+      default: 10
+    - name: WATERMARK_IMAGE_LOGO_MARGIN
+      description: "The margin apply to the watermark image."
+      type: "NUMBER"
+      default: 5
+    - name: WATERMARK_IMAGE_PATH
+      description: "The path to store the watermark image."
+      type: "STRING"
+      default: "watermark-images/"
+    - name: WATERMARK_IMAGE_LOGO_POSITION
+      description: "The position of the watermark image."
+      type: "STRING"
+      default: "bottom-right"
+    - name: WATERMARK_IMAGE_FORMAT
+      description: "The format of the watermark image generated."
+      type: "STRING"
+      default: "jpeg"
+template: |
+    env:
+        {{ if .WATERMARK_IMAGE_PATH }}
+        WATERMARK_IMAGE_PATH: {{ .WATERMARK_IMAGE_PATH }}
+        {{ end }}
+        {{ if .WATERMARK_IMAGE_LOGO_WIDTH }}
+        WATERMARK_IMAGE_LOGO_WIDTH: {{ .WATERMARK_IMAGE_LOGO_WIDTH }}
+        {{ end }}
+        {{ if .WATERMARK_IMAGE_LOGO_MARGIN }}
+        WATERMARK_IMAGE_LOGO_MARGIN: {{ .WATERMARK_IMAGE_LOGO_MARGIN }}
+        {{ end }}
+        {{ if .WATERMARK_IMAGE_LOGO_POSITION }}
+        WATERMARK_IMAGE_LOGO_POSITION: {{ .WATERMARK_IMAGE_LOGO_POSITION }}
+        {{ end }}
+        {{ if .WATERMARK_IMAGE_FORMAT }}
+        WATERMARK_IMAGE_FORMAT: {{ .WATERMARK_IMAGE_FORMAT }}
+        {{ end }}
+        WATERMARK_IMAGE_URL: {{ .WATERMARK_IMAGE_URL }}
+    volumes:
+    - name: {{ .STORE }}
+      store: {{ .STORE }}
+    events:
+      - cloudevent:
+          expression: |
+            event.source == "koyeb.com/gateway" &&
+            event.subject == "{{ .STORE }}" &&
+            event.type.matches("s3:ObjectCreated:.*") &&
+            !data.object.key.startsWith("{{ .WATERMARK_IMAGE_PATH }}") &&
+            data.object.key.matches("([^\\s]+(\\.(?i)(jpe?g|png|gif|bmp))$)")

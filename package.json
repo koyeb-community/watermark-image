@@ -1,0 +1,13 @@
+{
+  "name": "function-watermark-image",
+  "version": "1.0.0",
+  "main": "./watermark-image.js",
+  "homepage": "https://www.koyeb.com",
+  "repository": "https://github.com/koyeb-community/function-watermark-image",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.742.0",
+    "jimp": "^0.16.1",
+    "node-fetch": "^2.6.0"
+  }
+}
