@@ -27,7 +27,7 @@ const watermarkImage = async (s3Instance, bucket, key, watermarkImageUrl) => {
     const watermarkImageFormat = process.env.WATERMARK_IMAGE_FORMAT || "jpeg";
 
     if (!(watermarkImageFormat in watermarkImageFormats)) {
-      throw new Error("Unsupported MIME type.");
+      throw new Error("Unsupported output format requested.");
     }
 
     const logo = await Jimp.read(watermarkImageUrl);
